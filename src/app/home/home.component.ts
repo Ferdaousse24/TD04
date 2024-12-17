@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { trigger, style, transition, animate, keyframes, query, stagger } from '@angular/animations';
+import { TestServiceService } from '../test-service.service';
 
 @Component({
   selector: 'app-home',
@@ -20,28 +21,29 @@ import { trigger, style, transition, animate, keyframes, query, stagger } from '
     ]) ])]
 })
 export class HomeComponent {
-  objectifs: String[] = [];
-  nbItems: number = 4;
-  btnText: String = "";
+  objectifsHome: String[] = ['f','f'];
+  nbItemHome: number = 4;
+  btnTextHome: string = ""; // Type 'string'
+  test: String  = "coucou";
 
-  constructor(private toto: Router){
-
+  constructor(private toto: Router, private monTestService: TestServiceService){
+      this.test = monTestService.getInfo();
+      this.objectifsHome = this.monTestService.objectifs; // Récupérer les objectifs du service
+      this.nbItemHome = this.monTestService.nbItems;
   }
   ngOnInit(){
-    this.nbItems = 0;
+    this.nbItemHome = 0;
+  }
+  ajoutItem(): void {
+    if (this.btnTextHome.trim()) { // Vérifie que l'input n'est pas vide
+      this.monTestService.setBtnText(this.btnTextHome);  // Met à jour le texte du bouton dans le service
+      this.objectifsHome = [...this.monTestService.ajoutItem()];  // Ajoute l'élément et met à jour la liste
+      this.btnTextHome = '';  // Vide l'input après l'ajout
+    }  }
+
+  getExplicitClass(): string {
+    return (this.btnTextHome === "..." || this.btnTextHome === "") ? 'btn' : 'btnok';
   }
 
-  ajoutItem(){
-    this.objectifs.push(this.btnText);
-    this.nbItems = this.objectifs.length;
-    setTimeout(()=> {this.toto.navigate(['about'])}, 3000);
-  }
-  getExplicitClass(){
-    if (this.btnText == "..."|| this.btnText == "")
-    {
-      return 'btn'
-    }else{
-      return 'btnok'
-    }
-  }
+  
 }
